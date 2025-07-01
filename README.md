@@ -1,4 +1,4 @@
-## 📰 Projeto: Curadoria Inteligente de Notícias sobre Economia e Tecnologia
+## 📰 Projeto: Curadoria Inteligente de Notícias com Inteligência Artificial (AI)
 
 Este é um projeto pessoal de uso real no meu dia a dia.
 
