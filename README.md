@@ -11,7 +11,7 @@ Aplicação web desenvolvida em **Python + Flask**, que realiza a **coleta autom
 - 🔎 Web scraping com `requests` e `BeautifulSoup`
 - 🤖 Filtragem e resumo das notícias com `openai` (GPT-4o-mini)
 - 🌐 Interface web com `Flask`
-- 📸 Exibição de perfil com foto e link do LinkedIn
+- 📸 Exibição de perfil e link das notícias
 - 🐳 Deploy com Docker
 
 ---
