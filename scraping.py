@@ -55,7 +55,7 @@ def coletar_noticias_filtradas():
         "Filtre apenas as notícias que sejam relevantes sobre ECONOMIA ou TECNOLOGIA. "
         "Ignore assuntos como esporte, celebridades, fofocas ou anúncios. "
         "Para cada item relevante, devolva no seguinte formato, usando '|||' como separador:\n\n"
-        "FONTE ||| DATA E HORA (YYYY-MM-DD HH:MM) ||| TÍTULO RESUMIDO ||| CATEGORIA: economia/tecnologia ||| LINK\n\n"
+        "Fonte ||| Data e Hora (YYYY-MM-DD HH:MM) ||| Título Resumido ||| Categoria: Economia/Tecnologia ||| Link\n\n"
     )
 
     lista_textos = "\n".join(
