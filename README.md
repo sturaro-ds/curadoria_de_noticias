@@ -68,15 +68,6 @@ docker run -p 8000:8000 app-noticias
 
 [http://localhost:8000](http://localhost:8000)
 
----
-
-### 👤 Sobre o autor
-
-**Claudio Sturaro**  
-Data Scientist at Lefosse  
-MBA USP/ESALQ – Data Science  
-MBA FGV – Gestão de Processos  
-[Ver perfil no LinkedIn](https://www.linkedin.com/in/claudiosturaro/)
 
 ---
 
