@@ -1,0 +1,17 @@
+# Variáveis secretas
+.env
+
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos que não devem ser comitados
+.DS_Store
+Video.mov
+slides.pptx
+static/fotoperfil.png
+
+# Outros
+*.log
+*.sqlite3
+instance/
