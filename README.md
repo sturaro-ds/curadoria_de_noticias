@@ -1,8 +1,12 @@
-## 📰 Projeto: Curadoria Inteligente de Notícias sobre Economia e Tecnologia
+## PROJETO: 
+## Curadoria Inteligente de Notícias sobre Economia e Tecnologia
 
 Este é um projeto pessoal de uso real no meu dia a dia.
 
 Aplicação web desenvolvida em **Python + Flask**, que realiza a **coleta automatizada de notícias** a partir de fontes confiáveis e utiliza **modelos da OpenAI** para **filtrar e resumir as mais relevantes** nas áreas de **Economia** e **Tecnologia**. A interface web exibe as manchetes com resumos gerados por IA, além de apresentar o link para navegar ao site e visualizar a notícia na integra.
+
+---
+![Notícias](static/resultado_webflask.png)
 
 ---
 
@@ -51,13 +55,13 @@ OPENAI_API_KEY=sua-chave-aqui
 #### Build da imagem:
 
 ```bash
-docker build -t noticias-app .
+docker build -t app-noticias .
 ```
 
 #### Executando o contêiner:
 
 ```bash
-docker run -p 8000:8000 noticias-app
+docker run -p 8000:8000 app-noticias
 ```
 
 #### Acesse no navegador:
