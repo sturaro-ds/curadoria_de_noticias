@@ -178,7 +178,7 @@ def exibir_noticias():
             </li>
         {% endfor %}
         </ul>
-    </body>
+    </body>     
     </html>
     """
     return render_template_string(html, noticias=noticias)
