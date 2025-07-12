@@ -71,10 +71,10 @@ def coletar_noticias_filtradas():
         "Filtre apenas as notícias que sejam relevantes sobre ECONOMIA ou TECNOLOGIA. "
         "Ignore assuntos como esporte, celebridades, fofocas ou anúncios. "
         "Selecione para cada site apenas uma das noticias, escolha a mais relevante. "
-        "Evite repetir o mesmo contexto / assunto entre as notícias. "
         "Ordene as notícias por relevância, e deixe as notícias em inglês por último. "
         "Para cada item relevante, devolva no seguinte formato, usando '|||' como separador:\n\n"
-        "Fonte ||| Data e Hora da Notícia (YYYY-MM-DD ÀS HH:MM) ||| Título Resumido ||| Categoria: Economia/Tecnologia ||| Link\n\n"
+        "Fonte ||| Data e Hora da Notícia (DD-MM-YYYY às HH:MM) ||| Título Resumido ||| Categoria: Economia/Tecnologia ||| Link da Notícia\n\n"
+        "A Data e Hora das Notícias podem estar em formatos diferentes, padronize para (DD-MM-YYYY às HH:MM) "
     )
 
     lista_textos = "\n".join(
@@ -87,7 +87,7 @@ def coletar_noticias_filtradas():
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": full_prompt}],
         temperature=0.4,
-        max_tokens=2000
+        max_tokens=3000
     )
 
     texto = response.choices[0].message.content.strip()
@@ -115,3 +115,6 @@ def coletar_noticias_filtradas():
             print(f"Detalhes: {e}")
 
     return dados
+
+# testes
+coletar_noticias_filtradas()
