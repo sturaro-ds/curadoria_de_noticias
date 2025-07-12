@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def exibir_noticias():
+    print("Iniciando coleta dcleare notícias para exibição na Web, aguarde...")
     noticias = coletar_noticias_filtradas()
 
     html = """<!DOCTYPE html>
