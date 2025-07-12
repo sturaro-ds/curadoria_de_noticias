@@ -16,3 +16,4 @@ static/claudio.jpg
 *.log
 *.sqlite3
 instance/
+enviar_news_email.py
