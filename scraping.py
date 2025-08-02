@@ -5,6 +5,7 @@ import openai
 from dotenv import load_dotenv
 import os
 import random
+import re
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -14,7 +15,6 @@ sites = [
     {"nome": "CNN Brasil - Economia", "url": "https://www.cnnbrasil.com.br/economia/", "categoria": "economia"},
     {"nome": "Jornal de Notícias (JN)", "url": "https://www.jn.pt/", "categoria": "economia"},
     {"nome": "Diário de Notícias (DN)", "url": "https://www.dn.pt/", "categoria": "economia"},
-    {"nome": "Olhar Digital", "url": "https://olhardigital.com.br/", "categoria": "tecnologia"},
     {"nome": "Expresso", "url": "https://expresso.pt/", "categoria": "economia"},
     {"nome": "Público", "url": "https://www.publico.pt/", "categoria": "economia"},
     {"nome": "CNN Internacional", "url": "https://edition.cnn.com/", "categoria": "economia"},
@@ -39,6 +39,34 @@ sites = [
 ]
 
 random.shuffle(sites)
+
+# FONTES RETIRADAS
+""" 
+{"nome": "Olhar Digital", "url": "https://olhardigital.com.br/", "categoria": "tecnologia"} 
+"""
+
+def obter_data_real(link):
+    try:
+        resposta = requests.get(link, timeout=5)
+        soup = BeautifulSoup(resposta.text, "html.parser")
+
+        time_tag = soup.find("time")
+        if time_tag and time_tag.get("datetime"):
+            return time_tag["datetime"][:10]
+
+        meta_date = soup.find("meta", {"property": "article:published_time"})
+        if meta_date and meta_date.get("content"):
+            return meta_date["content"][:10]
+
+        match = re.search(r'/(\d{4})/(\d{2})/(\d{2})/', link)
+        if match:
+            return f"{match.group(3)}/{match.group(2)}/{match.group(1)}"
+
+    except Exception:
+        pass
+
+    return "DATA INDEFINIDA"
+
 
 def extrair_links(site):
     try:
@@ -68,30 +96,45 @@ def coletar_noticias_filtradas():
         raw_noticias.extend(extrair_links(site))
 
     prompt = (
-        "Filtre apenas as notícias que sejam relevantes sobre ECONOMIA ou TECNOLOGIA. "
-        "Ignore assuntos como esporte, celebridades, fofocas ou anúncios. "
-        "Selecione para cada site apenas uma das noticias, escolha a mais relevante. "
+        "Filtre apenas as notícias RELEVÂNTES sobre ECONOMIA ou TECNOLOGIA publicadas HOJE. "
+        "Use a data real fornecida no final de cada linha (Publicado em: ...) para filtrar, e use essa data como 'Data da Notícia'. "
+        "IGNORE assuntos como esporte, celebridades, fofocas, pets ou anúncios. "
         "Ordene as notícias por relevância, e deixe as notícias em inglês por último. "
-        "Para cada item relevante, devolva no seguinte formato, usando '|||' como separador:\n\n"
-        "Fonte ||| Data e Hora da Notícia (DD-MM-YYYY às HH:MM) ||| Título Resumido ||| Categoria: Economia/Tecnologia ||| Link da Notícia\n\n"
-        "A Data e Hora das Notícias podem estar em formatos diferentes, padronize para (DD-MM-YYYY às HH:MM) "
+        "A Data das Notícias podem estar em formatos diferentes, padronize para (DD-MM-YYYY). "
+        "Para cada item, devolva no seguinte formato com '|||' como separador:\n\n"
+        "Fonte ||| Data da Noticia / Publicacao (DD-MM-YYYY) ||| Título Resumido ||| Categoria ||| Link\n"
     )
 
     lista_textos = "\n".join(
-        f"{n['fonte']} - {n['texto']} - {n['categoria_sugerida']} - {n['link']}" for n in raw_noticias
+        f"{n['fonte']} - {n['texto']} - {n['categoria_sugerida']} - {n['link']} - Publicado em: {obter_data_real(n['link'])}"
+        for n in raw_noticias
     )
 
     full_prompt = prompt + lista_textos
 
+    # Modelo AI
+    llm = "gpt-4o-mini"
+    temperatura = 0.3
+
     response = openai.chat.completions.create(
-        model="gpt-4o-mini",
+        model=llm,
         messages=[{"role": "user", "content": full_prompt}],
-        temperature=0.4,
-        max_tokens=3000
+        temperature=temperatura,
+        max_tokens=2000
     )
 
     texto = response.choices[0].message.content.strip()
     linhas = texto.split("\n")
+    tokens_qtd = response.usage.total_tokens 
+    tokens_usd = (response.usage.total_tokens * 0.00075 / 1000)
+
+    # Função para extrair link limpo de "[Texto](URL)"
+    def extrair_link_correto(linha):
+        match = re.search(r"\((https?://[^\)]+)\)", linha)
+        if match:
+            return match.group(1)
+        return linha.strip()
+
     dados = []
 
     for linha in linhas:
@@ -104,9 +147,13 @@ def coletar_noticias_filtradas():
                     "Fonte": fonte.strip(),
                     "Categoria": categoria.strip(),
                     "Resumo": resumo.strip(),
-                    "Link da Matéria": link.strip(),
+                    "Link da Matéria": extrair_link_correto(link),
                     "Data e Hora da Captura": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                })
+                    "Modelo LLM": llm,
+                    "Temperatura": temperatura,
+                    "Tokens Qtd": tokens_qtd,
+                    "Custo ($USD)": tokens_usd
+                })                
         except Exception:
             continue
         
@@ -116,5 +163,10 @@ def coletar_noticias_filtradas():
 
     return dados
 
-# testes
-coletar_noticias_filtradas()
+# ANALISE
+""""
+import pandas as pd
+noticias = coletar_noticias_filtradas()
+noticias = pd.DataFrame(noticias)
+noticias
+"""
